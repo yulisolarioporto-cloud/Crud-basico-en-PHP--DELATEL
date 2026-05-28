@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DELATEL — Punto de Venta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+(async () => {
+    try {
+        const r = await fetch('./php/check_session.php', { credentials: 'same-origin' });
+        if (r.status === 401) { window.location.replace('login.html'); }
+    } catch (e) { window.location.replace('login.html'); }
+})();
+</script>
+</head>
+<body>
+<div class="pos-layout">
+
+    <!-- ══ CATÁLOGO ══ -->
+    <div class="pos-catalog">
+
+        <!-- Barra superior del catálogo -->
+        <div class="pos-catalog-top">
+            <h2>🛍 Catálogo</h2>
+            <div class="pos-nav-links">
+                <a href="./dashboard.html" class="btn btn-ghost btn-sm">📊</a>
+                <a href="./index.html"     class="btn btn-ghost btn-sm">📦 Productos</a>
+            </div>
+            <div class="pos-search">
+                <span class="search-icon">🔍</span>
+                <input
+                    type="text"
+                    id="txt-buscador"
+                    class="form-control"
+                    placeholder="Buscar producto..."
+                    oninput="filtrarProductos()"
+                    autocomplete="off">
+            </div>
+        </div>
+
+        <!-- Grid de productos -->
+        <div class="pos-grid-wrap">
+            <div class="pos-grid" id="contenedor-grid">
+                <!-- Se llena por JS -->
+                <div style="grid-column:1/-1">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏳</div>
+                        <p>Cargando productos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paginación -->
+        <div id="contenedor-paginas" class="pos-pagination"></div>
+    </div>
+
+    <!-- ══ CARRITO ══ -->
+    <div class="pos-cart">
+
+        <!-- Cabecera del carrito -->
+        <div class="cart-head">
+            <h3>🛒 Pedido</h3>
+            <span class="cart-count" id="cart-count">0</span>
+        </div>
+
+        <!-- Ítems del carrito -->
+        <div class="cart-items" id="lista-carrito-items">
+            <div class="cart-empty">
+                <div class="cart-empty-icon">🛒</div>
+                <span>El carrito está vacío</span>
+                <span style="font-size:12px;opacity:0.7">Haz clic en un producto para agregar</span>
+            </div>
+        </div>
+
+        <!-- Footer / Totales -->
+        <div class="cart-footer">
+
+            <!-- Total -->
+            <div class="cart-total-row grand">
+                <span>Total</span>
+                <span>S/. <span id="monto-total-carrito">0.00</span></span>
+            </div>
+
+            <!-- Efectivo recibido -->
+            <div class="cart-input-row">
+                <div class="cart-input-label">Efectivo recibido</div>
+                <input
+                    type="number"
+                    id="txt-paga-con"
+                    class="cart-input"
+                    placeholder="0.00"
+                    min="0"
+                    step="0.10"
+                    oninput="calcularVuelto()">
+            </div>
+
+            <!-- Vuelto -->
+            <div class="vuelto-row">
+                <span class="vuelto-label">Vuelto</span>
+                <span class="vuelto-value">S/. <span id="monto-vuelto">0.00</span></span>
+            </div>
+
+            <!-- Botón registrar venta -->
+            <button
+                class="btn-vender"
+                onclick="enviarVentaAlServidor()"
+                id="btn-vender"
+                disabled>
+                ✓ Registrar Venta
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="./js/ventas.js"></script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DELATEL — Acceso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: #07070e;
+    color: #eaeaf4;
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(108,99,255,0.09) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(16,185,129,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 100%, rgba(167,139,250,0.04) 0%, transparent 50%);
+    -webkit-font-smoothing: antialiased;
+}
+
+.login-wrap {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+
+.logo-wrap {
+    text-align: center;
+    margin-bottom: 32px;
+}
+.logo-wrap img {
+    height: 52px;
+    filter: brightness(1.2) drop-shadow(0 0 12px rgba(108,99,255,0.4));
+    margin-bottom: 12px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.logo-wrap .tagline {
+    color: #56567a;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.card {
+    background: #1c1c2e;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 28px;
+    text-align: center;
+    background: linear-gradient(135deg, #eaeaf4 40%, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.field { margin-bottom: 18px; }
+.field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    color: #56567a;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+.field input {
+    width: 100%;
+    background: #0f0f1a;
+    border: 1px solid rgba(255,255,255,0.11);
+    border-radius: 9px;
+    color: #eaeaf4;
+    padding: 11px 14px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    transition: 0.18s;
+    outline: none;
+}
+.field input:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.25);
+    background: #16162a;
+}
+.field input::placeholder { color: #3a3a60; }
+
+.btn-login {
+    width: 100%;
+    background: linear-gradient(135deg, #6c63ff, #a78bfa);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 0.3px;
+    transition: 0.18s;
+    box-shadow: 0 4px 20px rgba(108,99,255,0.35);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-login:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(108,99,255,0.45);
+    filter: brightness(1.07);
+}
+.btn-login:active:not(:disabled) { transform: translateY(0); }
+.btn-login:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="login-wrap">
+    <div class="logo-wrap">
+        <img src="./imagen/Delafiber-logo.png" alt="Delatel">
+        <div class="tagline">Sistema de Gestión Comercial</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Iniciar Sesión</div>
+
+        <div class="field">
+            <label>Usuario</label>
+            <input type="text" id="usuario" placeholder="Ingresa tu usuario" autocomplete="username">
+        </div>
+        <div class="field">
+            <label>Contraseña</label>
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+
+        <button class="btn-login" id="btn-login" onclick="login()">
+            <div class="spinner" id="spinner"></div>
+            <span id="btn-text">Ingresar</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    
+document.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+});
+
+async function login() {
+    const btn      = document.getElementById('btn-login');
+    const spinner  = document.getElementById('spinner');
+    const btnText  = document.getElementById('btn-text');
+    const usuario  = document.getElementById('usuario').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!usuario || !password) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos requeridos',
+            text: 'Completa tu usuario y contraseña',
+            background: '#1c1c2e',
+            color: '#eaeaf4',
+            confirmButtonColor: '#6c63ff'
+        });
+        return;
+    }
+
+    btn.disabled      = true;
+    spinner.style.display = 'block';
+    btnText.textContent   = 'Verificando...';
+
+    try {
+        const res  = await fetch('login.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario, password })
+        });
+        const data = await res.json();
+
+        if (!data.error) {
+            btnText.textContent = '✓ Accediendo...';
+            setTimeout(() => { window.location.href = 'index.html'; }, 400);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Acceso denegado',
+                text: data.mensaje || 'Usuario o contraseña incorrectos',
+                background: '#1c1c2e',
+                color: '#eaeaf4',
+                confirmButtonColor: '#6c63ff'
+            });
+            document.getElementById('password').value = '';
+            document.getElementById('password').focus();
+        }
+    } catch(e) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor',
+            background: '#1c1c2e',
+            color: '#eaeaf4',
+            confirmButtonColor: '#6c63ff'
+        });
+    } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = 'Ingresar';
+    }
+}
+</script>
+</body>
+</html>

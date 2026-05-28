@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DELATEL — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(async () => {
+    try {
+        const r = await fetch('./php/check_session.php', { credentials: 'same-origin' });
+        if (r.status === 401) { window.location.replace('login.html'); }
+    } catch (e) { window.location.replace('login.html'); }
+})();
+</script>
+</head>
+<body>
+
+<nav class="topbar">
+    <div class="topbar-brand">
+        <img src="./imagen/Delafiber-logo.png" alt="Delatel">
+        <span>Dashboard</span>
+    </div>
+    <div class="topbar-nav">
+        <a href="./index.html"  class="btn btn-ghost btn-sm">📦 Productos</a>
+        <a href="./ventas.html" class="btn btn-primary btn-sm">🛒 Punto de Venta</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+
+    <!-- Stats -->
+    <div class="stats-grid" id="stats-grid">
+        <div class="stat-card blue">
+            <div class="stat-label">Total Productos</div>
+            <div class="stat-value" id="total-productos">—</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-label">Ingresos Totales</div>
+            <div class="stat-value" id="total-ventas">—</div>
+        </div>
+        <div class="stat-card red">
+            <div class="stat-label">Stock Bajo</div>
+            <div class="stat-value" id="stock-bajo">—</div>
+        </div>
+        <div class="stat-card amber">
+            <div class="stat-label">Ventas Hoy</div>
+            <div class="stat-value" id="ventas-hoy">—</div>
+        </div>
+    </div>
+
+    <!-- Gráfico + Stock bajo -->
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start" class="dashboard-grid">
+
+        <div class="card">
+            <div class="card-header">
+                <h3>📈 Ventas — últimos 7 días</h3>
+            </div>
+            <div id="chart-wrap" style="position:relative;height:220px">
+                <canvas id="graficoVentas"></canvas>
+                <div id="chart-empty" style="display:none;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px">
+                    Sin datos de ventas aún
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 style="color:var(--red)">⚠ Stock Bajo</h3>
+                <span class="badge badge-red" id="count-stock-bajo">0</span>
+            </div>
+            <div id="lista-stock-bajo" style="display:flex;flex-direction:column;gap:7px">
+                <div style="color:var(--text3);text-align:center;padding:20px 0;font-size:13px">Cargando...</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+@media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr !important; } }
+</style>
+
+<script src="./js/dashboard.js"></script>
+</body>
+</html>

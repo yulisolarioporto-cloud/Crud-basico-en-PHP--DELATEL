@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DELATEL — Productos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+// Verificar sesión activa antes de cargar la página
+(async () => {
+    try {
+        const r = await fetch('./php/check_session.php', { credentials: 'same-origin' });
+        if (r.status === 401) { window.location.replace('login.html'); }
+    } catch (e) { window.location.replace('login.html'); }
+})();
+</script>
+</head>
+<body>
+
+<nav class="topbar">
+    <div class="topbar-brand">
+        <img src="./imagen/Delafiber-logo.png" alt="Delatel">
+        <span>Productos</span>
+    </div>
+    <div class="topbar-nav">
+        <a href="./dashboard.html" class="btn btn-ghost btn-sm">📊 Dashboard</a>
+        <a href="./ventas.html"    class="btn btn-primary btn-sm">🛒 Punto de Venta</a>
+    </div>
+</nav>
+
+<div class="page-wrap">
+
+    <!-- Formulario -->
+    <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+            <h3 id="form-title">➕ Nuevo Producto</h3>
+            <button class="btn btn-ghost btn-sm" id="btn-cancelar" style="display:none" onclick="limpiar()">✕ Cancelar</button>
+        </div>
+        <div class="form-row">
+            <div style="flex:2;min-width:180px">
+                <label class="form-label">Modelo / Nombre</label>
+                <input type="text" id="modelo" class="form-control" placeholder="Nombre del producto" autocomplete="off">
+            </div>
+            <div style="flex:1;min-width:120px">
+                <label class="form-label">Precio (S/.)</label>
+                <input type="number" id="precio" class="form-control" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div style="flex:1;min-width:100px">
+                <label class="form-label">Stock</label>
+                <input type="number" id="stock" class="form-control" placeholder="0" min="0">
+            </div>
+            <div>
+                <label class="form-label" style="opacity:0">‎</label>
+                <button class="btn btn-success" id="btn-guardar" onclick="guardar()" style="height:40px;padding:0 22px;min-width:100px">
+                    💾 Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="tabs-row">
+            <button class="tab-btn active" id="tab-activos"  onclick="setTab('activos')">Activos</button>
+            <button class="tab-btn"        id="tab-papelera" onclick="setTab('papelera')">🗑 Papelera</button>
+            <button class="tab-btn"        id="tab-kardex"   onclick="setTab('kardex')">📋 Kardex</button>
+        </div>
+        <div id="kardex-actions" style="display:none;align-items:center;gap:8px;flex-wrap:wrap">
+            <div style="position:relative">
+                <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px">🔍</span>
+                <input type="text" id="buscar-kardex" class="form-control"
+                    placeholder="Buscar en kardex..."
+                    style="width:200px;height:36px;padding:6px 12px 6px 32px"
+                    oninput="mostrarHistorialKardex()">
+            </div>
+            <a href="./php/exportar_excel.php" class="btn btn-success btn-sm">📊 Excel</a>
+            <a href="./php/exportar_pdf.php"   class="btn btn-danger btn-sm">📄 PDF</a>
+        </div>
+    </div>
+
+    <!-- Panel productos / papelera -->
+    <div id="panel-productos">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Modelo</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla">
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">⏳</div>
+                                <p>Cargando productos...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Panel Kardex -->
+    <div id="panel-kardex" style="display:none">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Producto</th>
+                        <th>Acción</th>
+                        <th>Movimiento</th>
+                        <th>Cant.</th>
+                        <th>Saldo</th>
+                        <th>Precio Unit.</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody id="historial-kardex-container">
+                    <tr><td colspan="8">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">⏳</div>
+                            <p>Cargando kardex...</p>
+                        </div>
+                    </td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script src="./js/app.js"></script>
+</body>
+</html>
